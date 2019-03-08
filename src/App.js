@@ -1,41 +1,109 @@
 import React, { Component } from 'react';
+import {Container, Col, Row, Card, CardBody } from 'reactstrap';
 import './App.css';
+//Laddat ner react-moment som dependency och importerat den för att transformera datum och tid från unix
+import Moment from 'react-moment';
+//Valt format för datum och tid:
+Moment.globalFormat = 'MM/DD HH:mm';
 
+/*hade en weather array från början för all data,
+ men för att få tillgång till all data med tanke på att det är objekt och array och objekt i 
+ array osv så valde jag att göra en tom array för respektive sak jag vill kunna visa användaren */
 class App extends Component {
 constructor() {
   super();
+
   this.state = {
-    items: [],
-    isLoaded: false,
+    weather: [],
+    currently: [],
+    hourly: [],
+    daily: [],
     error: null
   };
 }
 
 
+/*Jag la i min geolocation i en funktion i min mount eftersom jag sedan sparar ner koordinaterna i respektiva variabel
+för att använda dessa i min fetch till API:et, la också till svenska som språk i min request,
+efter fetch så väljer jag att göra en setstate för respektive array där jag specifikt väljer vilken data det är jag vill komma åt,
+för att inte komplicera livet så vill jag direkt in i arrayerna för daily och hourly så jag sedan bara kan rendera ut den datan i min render funktion*/
+
 componentDidMount() {
-  fetch("url:en till api:et")
+  debugger;
+  navigator.geolocation.getCurrentPosition((location) =>{
+    let latitude = location.coords.latitude;
+    let longitude = location.coords.longitude;
+    debugger;
+  fetch(`https://cors-anywhere.herokuapp.com/https://api.darksky.net/forecast/c3acb99cc725550cc7e45a340e32bd52/${latitude},${longitude}?lang=sv`)
   .then(res => res.json())
-  .then(res => {
-this.setState({
-  items: res.results
-} 
-  )});
+  .then(data => {
+this.setState({ 
+  weather: data,
+  currently: data['currently'],
+  hourly: data['hourly']['data'],
+  daily: data['daily']['data']
+});
+
+debugger;
+});
+}) 
 }
 
-
-
+ 
+/*här uppdaterar jag respektive state till datan jag fetchat från min request och skickar tillbaka
+mina html-element med innehåll och klasser jag använder från reactstrap*/
 
   render() {
-const { items } = this.state;
+const {weather } = this.state
+const {currently} = this.state
+const {hourly} = this.state
+const {daily} = this.state
+
+debugger;
     return (
-      <div className="App">
-    <h1>Planets</h1>
-    <ul> 
-    {items.map(planet=> (<li>{planet.name}</li>)
-  )}</ul>
-      </div>
-    );
-  }
+   
+<Container>
+<h1>7-dagars prognos för {weather.timezone}</h1>
+
+{daily.map(d => 
+<div>
+  <Row> 
+    <Col  xs="6" sm="4">
+  <Card body inverse color="info" style={{borderColor: '#333' }}>
+    <CardBody>
+  <h2><Moment unix>{d.time}</Moment></h2>
+  <p key={d.summary}>{d.summary}</p>
+  <ul>
+<li>soluppgång: <Moment unix>{d.sunriseTime}</Moment> </li> 
+ <li>solnedgång: <Moment unix>{d.sunsetTime}</Moment> </li>
+ <li key={d.humidity}>luftfuktighet: {d.humidity}</li>
+<li key={d.windSpeed}>vindstyrka: {d.windSpeed}</li>
+<li key={d.temperatureHigh}>Högsta temperatur: {d.temperatureHigh}</li>
+<li key={d.temperatureLow}>Högsta temperatur: {d.temperatureLow}</li>
+</ul>
+</CardBody>
+</Card>
+</Col>
+</Row> 
+</div>
+)}
+
+</Container>
+  
+  
+
+
+);
+
+} 
+
 }
 
 export default App;
+
+//Saker som ska finnas med för användaren:
+
+// Temperatur, Vindstyrka, Luftfuktighet, Soluppgång & nedgång (klockslag), välj mellan farenheit & celcius
+
+//se kortöversikt 7 dagars väder, var tredje timme för nuvarande dygn, 5-dagars prognos
+
