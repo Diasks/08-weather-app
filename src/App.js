@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Container, Col, Row, Card, CardBody } from 'reactstrap';
+import {Container, Col, Row, Card, CardBody, Alert } from 'reactstrap';
 import Skycons from 'react-skycons';
 import './App.css';
 //Laddat ner react-moment som dependency och importerat den för att transformera datum och tid från unix
@@ -63,38 +63,71 @@ const {hourly} = this.state
 const {daily} = this.state
 
 
+
+
 debugger;
     return (
 
 
 <Container>
-<h1>7-dagars prognos för {weather.timezone}</h1>
+
+
+<Alert color="primary">
+        This is a primary alert — check it out!
+   
+  <h1>Vädret just nu:</h1>
+  <Moment unix>{currently.time}</Moment>
+  <p>{currently.summary}, 
+temperatur:
+ farenheit: {Math.round(currently.temperature)} 
+celcius: {Math.round((currently.temperature  - 32) * (5/9))}</p>
+{console.log(currently)}
+   </Alert>
+
+
+<h2>Prognos för varje timme</h2>
+{hourly.map(h =>
+<div>
+<h3><Moment unix>{h.time}</Moment></h3>
+<p>{h.summary}</p>
+</div>
+)}
+
+
+<h2>7-dagars prognos för {weather.timezone}</h2>
 
 {daily.map(d => 
+
+
+
 <div>
+
+
   <Row> 
-    <Col  xs="6" sm="4">
+    <Col  xs="4" sm="4">
   <Card body inverse color="info" style={{borderColor: '#333' }}>
     <CardBody>
-  <h2><Moment unix>{d.time}</Moment></h2>
+  <h2> <Moment unix>{d.time}</Moment> </h2>
   <p key={d.summary}>{d.summary}</p>
 <Skycons 
       color='white' 
-      icon={d.icon.toUpperCase()} 
+      icon={d.icon.toUpperCase()}
       autoplay={true}/>
   <ul>
 <li>soluppgång: <Moment unix>{d.sunriseTime}</Moment> </li> 
  <li>solnedgång: <Moment unix>{d.sunsetTime}</Moment> </li>
  <li key={d.humidity}>luftfuktighet: {d.humidity}</li>
 <li key={d.windSpeed}>vindstyrka: {d.windSpeed}</li>
-<li key={d.temperatureHigh}>Högsta temperatur: {d.temperatureHigh}</li>
-<li key={d.temperatureLow}>Högsta temperatur: {d.temperatureLow}</li>
+<li key={d.temperatureHigh}>Högsta temperatur: {Math.round((d.temperatureHigh  - 32) * (5/9))}</li>
+<li key={d.temperatureLow}>Lägsta temperatur: {Math.round((d.temperatureLow  - 32) * (5/9))}</li>
 </ul>
 </CardBody>
 </Card>
 </Col>
 </Row> 
 </div>
+
+
 )}
 
 </Container>
