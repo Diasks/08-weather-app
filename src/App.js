@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Container, Col, Row, Card, CardBody, Alert } from 'reactstrap';
+import {Container, Col, Row, Card, CardBody, Alert, Table, Button } from 'reactstrap';
 import Skycons from 'react-skycons';
 import './App.css';
 //Laddat ner react-moment som dependency och importerat den för att transformera datum och tid från unix
@@ -71,26 +71,47 @@ debugger;
 
 <Container>
 
-
-<Alert color="primary">
-        This is a primary alert — check it out!
+<Alert color="info">
+     
    
   <h1>Vädret just nu:</h1>
   <Moment unix>{currently.time}</Moment>
   <p>{currently.summary}, 
 temperatur:
- farenheit: {Math.round(currently.temperature)} 
-celcius: {Math.round((currently.temperature  - 32) * (5/9))}</p>
+ {Math.round(currently.temperature) + "°F"} 
+ {Math.round((currently.temperature  - 32) * (5/9)) + "°C"}</p>
 {console.log(currently)}
    </Alert>
 
 
+   <Button outline color="info">5 dagar</Button>{' '}
+    <Button outline color="info">7 dagar</Button>{' '}
+    <Button outline color="info">Timvis</Button>
+
 <h2>Prognos för varje timme</h2>
 {hourly.map(h =>
-<div>
-<h3><Moment unix>{h.time}</Moment></h3>
-<p>{h.summary}</p>
-</div>
+  <Table bordered dark size="sm">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Klockslag</th>
+      <th>Sammanfattning</th>
+      <th>Temperatur</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row"><Skycons 
+      color='white' width="50" height="50"
+      icon={h.icon.toUpperCase()}
+      autoplay={true}/></th>
+      <td><Moment unix>{h.time}</Moment></td>
+      <td>{h.summary}</td>
+      <td>{Math.round((h.temperature  - 32) * (5/9)) + " °C"}
+      </td>
+    </tr></tbody>
+    </Table>
+
 )}
 
 
@@ -116,10 +137,11 @@ celcius: {Math.round((currently.temperature  - 32) * (5/9))}</p>
   <ul>
 <li>soluppgång: <Moment unix>{d.sunriseTime}</Moment> </li> 
  <li>solnedgång: <Moment unix>{d.sunsetTime}</Moment> </li>
- <li key={d.humidity}>luftfuktighet: {d.humidity}</li>
-<li key={d.windSpeed}>vindstyrka: {d.windSpeed}</li>
-<li key={d.temperatureHigh}>Högsta temperatur: {Math.round((d.temperatureHigh  - 32) * (5/9))}</li>
-<li key={d.temperatureLow}>Lägsta temperatur: {Math.round((d.temperatureLow  - 32) * (5/9))}</li>
+ <li key={d.humidity}>luftfuktighet: {d.humidity + "%"}</li>
+<li key={d.windSpeed}>vindstyrka: {Math.round((d.windSpeed)) + " mph"}</li>
+
+<li key={d.temperatureHigh}>Högsta temperatur: {Math.round((d.temperatureHigh  - 32) * (5/9)) + " °C"}</li>
+<li key={d.temperatureLow}>Lägsta temperatur: {Math.round((d.temperatureLow  - 32) * (5/9)) + " °C"}</li>
 </ul>
 </CardBody>
 </Card>
