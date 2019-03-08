@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {Container, Col, Row, Card, CardBody } from 'reactstrap';
+import Skycons from 'react-skycons';
 import './App.css';
 //Laddat ner react-moment som dependency och importerat den för att transformera datum och tid från unix
 import Moment from 'react-moment';
@@ -29,6 +30,7 @@ efter fetch så väljer jag att göra en setstate för respektive array där jag
 för att inte komplicera livet så vill jag direkt in i arrayerna för daily och hourly så jag sedan bara kan rendera ut den datan i min render funktion*/
 
 componentDidMount() {
+
   debugger;
   navigator.geolocation.getCurrentPosition((location) =>{
     let latitude = location.coords.latitude;
@@ -47,6 +49,7 @@ this.setState({
 debugger;
 });
 }) 
+   
 }
 
  
@@ -59,9 +62,11 @@ const {currently} = this.state
 const {hourly} = this.state
 const {daily} = this.state
 
+
 debugger;
     return (
-   
+
+
 <Container>
 <h1>7-dagars prognos för {weather.timezone}</h1>
 
@@ -73,6 +78,10 @@ debugger;
     <CardBody>
   <h2><Moment unix>{d.time}</Moment></h2>
   <p key={d.summary}>{d.summary}</p>
+<Skycons 
+      color='white' 
+      icon={d.icon.toUpperCase()} 
+      autoplay={true}/>
   <ul>
 <li>soluppgång: <Moment unix>{d.sunriseTime}</Moment> </li> 
  <li>solnedgång: <Moment unix>{d.sunsetTime}</Moment> </li>
@@ -89,8 +98,7 @@ debugger;
 )}
 
 </Container>
-  
-  
+
 
 
 );
