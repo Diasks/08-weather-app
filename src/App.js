@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import {Container, Col, Row, Card, CardBody, Alert, Table, Button } from 'reactstrap';
+import {Container, Col, Row, Card, CardBody, Alert, Table } from 'reactstrap';
 import Skycons from 'react-skycons';
+import {MDBIcon} from 'mdbreact';
 import './App.css';
+
 //Laddat ner react-moment som dependency och importerat den för att transformera datum och tid från unix
 import Moment from 'react-moment';
 //Valt format för datum och tid:
@@ -68,56 +70,58 @@ const {daily} = this.state
 debugger;
     return (
 
-
 <Container>
-
 <Alert color="info">
-     
-   
-  <h1>Vädret just nu:</h1>
-  <Moment unix>{currently.time}</Moment>
-  <p>{currently.summary}, 
-temperatur:
- {Math.round(currently.temperature) + "°F"} 
- {Math.round((currently.temperature  - 32) * (5/9)) + "°C"}</p>
-{console.log(currently)}
+  <h1>Vädret just nu i {weather.timezone} <MDBIcon icon="globe" size="lg" /></h1> 
+
+  <ul> 
+    <li>  <Moment unix>{currently.time}</Moment></li>
+    <li> {currently.summary}</li>
+ <li> {Math.round((currently.temperature  - 32) * (5/9)) + "°C"}  </li> 
+<li>{Math.round(currently.temperature) + "°F"} </li> 
+<li>{currently.humidity + " %"} </li>
+<li>{Math.round((currently.windSpeed)) + " mph"} </li>
+
+</ul>
    </Alert>
 
 
-   <Button outline color="info">5 dagar</Button>{' '}
-    <Button outline color="info">7 dagar</Button>{' '}
-    <Button outline color="info">Timvis</Button>
+<h3>Kortöversikt för veckan:</h3>
 
-<h2>Prognos för varje timme</h2>
-{hourly.map(h =>
-  <Table bordered dark size="sm">
+
+<Table bordered dark size="sm">
   <thead>
     <tr>
-      <th></th>
-      <th>Klockslag</th>
+      <th>Prognos för var tredje timme</th>
       <th>Sammanfattning</th>
       <th>Temperatur</th>
     </tr>
   </thead>
+
+
   <tbody>
+
+
+  {hourly.filter((_,i) => i % 3 === 0).map(h =>
+
+
+ 
     <tr>
-      <th scope="row"><Skycons 
-      color='white' width="50" height="50"
-      icon={h.icon.toUpperCase()}
-      autoplay={true}/></th>
       <td><Moment unix>{h.time}</Moment></td>
       <td>{h.summary}</td>
-      <td>{Math.round((h.temperature  - 32) * (5/9)) + " °C"}
+      <td>{Math.round((h.temperature  - 32) * (5/9)) + " °C"} {' '}  {Math.round(h.temperature) + "°F"}
       </td>
-    </tr></tbody>
+    </tr>
+  
+  )}
+
+</tbody>
     </Table>
 
-)}
 
 
-<h2>7-dagars prognos för {weather.timezone}</h2>
+<h2>5-dagars prognos</h2>
 
-{daily.map(d => 
 
 
 
@@ -125,32 +129,35 @@ temperatur:
 
 
   <Row> 
-    <Col  xs="4" sm="4">
+  {daily.slice(0,5).map(d => 
+    <Col xs="6" sm="4">
   <Card body inverse color="info" style={{borderColor: '#333' }}>
     <CardBody>
-  <h2> <Moment unix>{d.time}</Moment> </h2>
-  <p key={d.summary}>{d.summary}</p>
-<Skycons 
-      color='white' 
-      icon={d.icon.toUpperCase()}
+  <h3> <Moment unix>{d.time}</Moment> </h3>
+  
+<Skycons color='white'
+      icon={d.icon.toUpperCase()} 
       autoplay={true}/>
   <ul>
-<li>soluppgång: <Moment unix>{d.sunriseTime}</Moment> </li> 
- <li>solnedgång: <Moment unix>{d.sunsetTime}</Moment> </li>
- <li key={d.humidity}>luftfuktighet: {d.humidity + "%"}</li>
-<li key={d.windSpeed}>vindstyrka: {Math.round((d.windSpeed)) + " mph"}</li>
+  <li key={d.temperatureHigh}><MDBIcon icon="temperature-high" size="lg"/> {Math.round((d.temperatureHigh  - 32) * (5/9)) + " °C"} {' '}
+{Math.round(d.temperatureHigh) + " °F"}</li>
+<li key={d.temperatureLow}><MDBIcon icon="temperature-low" size="lg"/> {Math.round((d.temperatureLow  - 32) * (5/9)) + " °C"}
+{' '} {Math.round(d.temperatureLow) + " °F"}</li>
+ <li key={d.humidity}><MDBIcon icon ="tint" size="lg"/><MDBIcon icon ="percent" size="lg" /> {d.humidity + "%"}</li>
+<li key={d.windSpeed}><MDBIcon icon="wind" size="lg"/> {Math.round((d.windSpeed)) + " mph"}</li>
+<li> <MDBIcon icon="sun" size="lg" /> <MDBIcon icon="long-arrow-alt-up" size="lg" /> <Moment unix>{d.sunriseTime}</Moment> </li> 
+ <li> <MDBIcon icon="sun" size="lg" /> <MDBIcon icon="long-arrow-alt-down" size="lg" /> <Moment unix>{d.sunsetTime}</Moment> </li>
 
-<li key={d.temperatureHigh}>Högsta temperatur: {Math.round((d.temperatureHigh  - 32) * (5/9)) + " °C"}</li>
-<li key={d.temperatureLow}>Lägsta temperatur: {Math.round((d.temperatureLow  - 32) * (5/9)) + " °C"}</li>
 </ul>
 </CardBody>
 </Card>
 </Col>
+)}
 </Row> 
 </div>
 
 
-)}
+
 
 </Container>
 
