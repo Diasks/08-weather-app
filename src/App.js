@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Container, Col, Row, Card, CardBody, Alert, Table } from 'reactstrap';
+import {Container, Col, Row, Card, CardBody, Alert, Table, ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText } from 'reactstrap';
 import Skycons from 'react-skycons';
 import {MDBIcon} from 'mdbreact';
 import './App.css';
@@ -71,7 +71,7 @@ debugger;
     return (
 
 <Container>
-<Alert color="info">
+<Alert color="primary">
   <h1>Vädret just nu i {weather.timezone} <MDBIcon icon="globe" size="lg" /></h1> 
 
   <ul> 
@@ -86,13 +86,31 @@ debugger;
    </Alert>
 
 
-<h3>Kortöversikt för veckan:</h3>
+<h2>Kortöversikt för veckan</h2>
+<ListGroup>
+{daily.slice(1).map(day => 
+        <ListGroupItem active>
+          <ListGroupItemHeading>  <Moment unix>{day.time}</Moment>  </ListGroupItemHeading>
+          <ListGroupItemText>
+    
+          <MDBIcon icon="temperature-high" size="lg"/> {Math.round((day.temperatureHigh  - 32) * (5/9)) + " °C"} {' '}
+{Math.round(day.temperatureHigh) + " °F"} {' '} <MDBIcon icon="temperature-low" size="lg"/> {Math.round((day.temperatureLow  - 32) * (5/9)) + " °C"}
+{' '} {Math.round(day.temperatureLow) + " °F"} {' '} <MDBIcon icon ="tint" size="lg"/><MDBIcon icon ="percent" size="lg" /> {day.humidity + "%"} {' '}
+ <MDBIcon icon="wind" size="lg"/> {Math.round((day.windSpeed)) + " mph"} {' '}
+<MDBIcon icon="sun" size="lg" /> <MDBIcon icon="long-arrow-alt-up" size="lg" /> <Moment unix>{day.sunriseTime}</Moment> {' '}
+ <MDBIcon icon="sun" size="lg" /> <MDBIcon icon="long-arrow-alt-down" size="lg" /> <Moment unix>{day.sunsetTime}</Moment> 
 
+          </ListGroupItemText>
+        </ListGroupItem>
+)}
+        </ListGroup>
+
+  <h2>Prognos för var tredje timme</h2>
 
 <Table bordered dark size="sm">
   <thead>
     <tr>
-      <th>Prognos för var tredje timme</th>
+      <th>Datum/Klockslag</th>
       <th>Sammanfattning</th>
       <th>Temperatur</th>
     </tr>
@@ -176,4 +194,3 @@ export default App;
 // Temperatur, Vindstyrka, Luftfuktighet, Soluppgång & nedgång (klockslag), välj mellan farenheit & celcius
 
 //se kortöversikt 7 dagars väder, var tredje timme för nuvarande dygn, 5-dagars prognos
-
