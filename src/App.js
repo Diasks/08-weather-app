@@ -9,9 +9,11 @@ import Moment from 'react-moment';
 //Valt format för datum och tid:
 Moment.globalFormat = 'MM/DD HH:mm';
 
-/*hade en weather array från början för all data,
+/*hade en enda array från början för all data,
  men för att få tillgång till all data med tanke på att det är objekt och array och objekt i 
- array osv så valde jag att göra en tom array för respektive sak jag vill kunna visa användaren */
+ array osv så valde jag att göra en tom array för respektive sak jag vill kunna visa användaren för att lättare
+ komma åt innehållet */
+
 class App extends Component {
 constructor() {
   super();
@@ -21,7 +23,7 @@ constructor() {
     currently: [],
     hourly: [],
     daily: [],
-    error: null
+
   };
 }
 
@@ -33,47 +35,42 @@ för att inte komplicera livet så vill jag direkt in i arrayerna för daily och
 
 componentDidMount() {
 
-  debugger;
   navigator.geolocation.getCurrentPosition((location) =>{
     let latitude = location.coords.latitude;
     let longitude = location.coords.longitude;
-    debugger;
   fetch(`https://cors-anywhere.herokuapp.com/https://api.darksky.net/forecast/c3acb99cc725550cc7e45a340e32bd52/${latitude},${longitude}?lang=sv`)
   .then(res => res.json())
   .then(data => {
+
 this.setState({ 
   weather: data,
   currently: data['currently'],
   hourly: data['hourly']['data'],
   daily: data['daily']['data']
-});
 
-debugger;
 });
-}) 
-   
+});
+})  
 }
 
  
-/*här uppdaterar jag respektive state till datan jag fetchat från min request och skickar tillbaka
-mina html-element med innehåll och klasser jag använder från reactstrap*/
+/*här uppdaterar jag respektive state till datan jag fetchat från min request och renderar ut
+mina html-element i return med innehåll och speciella klasser jag använder från reactstrap och ikoner från mdbreact*/
 
   render() {
-const {weather } = this.state
+
+const {weather} = this.state
 const {currently} = this.state
 const {hourly} = this.state
 const {daily} = this.state
 
-
-
-
-debugger;
     return (
+
 
 <Container>
 <Alert color="primary">
+{/* Renderar ut vädret just nu för platsen där jag befinner mig */}
   <h1>Vädret just nu i {weather.timezone} <MDBIcon icon="globe" size="lg" /></h1> 
-
   <ul> 
     <li>  <Moment unix>{currently.time}</Moment></li>
     <li> {currently.summary}</li>
@@ -81,11 +78,10 @@ debugger;
 <li>{Math.round(currently.temperature) + "°F"} </li> 
 <li>{currently.humidity + " %"} </li>
 <li>{Math.round((currently.windSpeed)) + " mph"} </li>
-
 </ul>
    </Alert>
 
-
+{/* Renderar ut vädret för 7 framöver exklusive idag eftersom det visas ovan därav har jag slicat bort idag från min array*/}
 <h2>Kortöversikt för veckan</h2>
 <ListGroup>
 {daily.slice(1).map(day => 
@@ -105,8 +101,8 @@ debugger;
 )}
         </ListGroup>
 
+        {/* Renderar ut vädret för var tredje timme framöver, här filtrerar jag min array för att den ska vissa var tredje timme */}
   <h2>Prognos för var tredje timme</h2>
-
 <Table bordered dark size="sm">
   <thead>
     <tr>
@@ -115,44 +111,28 @@ debugger;
       <th>Temperatur</th>
     </tr>
   </thead>
-
-
   <tbody>
-
-
   {hourly.filter((_,i) => i % 3 === 0).map(h =>
-
-
- 
     <tr>
       <td><Moment unix>{h.time}</Moment></td>
       <td>{h.summary}</td>
       <td>{Math.round((h.temperature  - 32) * (5/9)) + " °C"} {' '}  {Math.round(h.temperature) + "°F"}
       </td>
     </tr>
-  
   )}
-
 </tbody>
     </Table>
 
 
-
+{/* Renderar ut vädret för fem dagar inklusive idag */}
 <h2>5-dagars prognos</h2>
-
-
-
-
 <div>
-
-
   <Row> 
   {daily.slice(0,5).map(d => 
     <Col xs="6" sm="4">
   <Card body inverse color="info" style={{borderColor: '#333' }}>
     <CardBody>
   <h3> <Moment unix>{d.time}</Moment> </h3>
-  
 <Skycons color='white'
       icon={d.icon.toUpperCase()} 
       autoplay={true}/>
@@ -165,7 +145,6 @@ debugger;
 <li key={d.windSpeed}><MDBIcon icon="wind" size="lg"/> {Math.round((d.windSpeed)) + " mph"}</li>
 <li> <MDBIcon icon="sun" size="lg" /> <MDBIcon icon="long-arrow-alt-up" size="lg" /> <Moment unix>{d.sunriseTime}</Moment> </li> 
  <li> <MDBIcon icon="sun" size="lg" /> <MDBIcon icon="long-arrow-alt-down" size="lg" /> <Moment unix>{d.sunsetTime}</Moment> </li>
-
 </ul>
 </CardBody>
 </Card>
@@ -173,24 +152,12 @@ debugger;
 )}
 </Row> 
 </div>
-
-
-
-
 </Container>
 
-
-
 );
-
 } 
-
 }
 
 export default App;
 
-//Saker som ska finnas med för användaren:
 
-// Temperatur, Vindstyrka, Luftfuktighet, Soluppgång & nedgång (klockslag), välj mellan farenheit & celcius
-
-//se kortöversikt 7 dagars väder, var tredje timme för nuvarande dygn, 5-dagars prognos
