@@ -24,8 +24,10 @@ constructor() {
     hourly: [],
     daily: [],
 
+
   };
 }
+
 
 
 /*Jag la i min geolocation i en funktion i min mount eftersom jag sedan sparar ner koordinaterna i respektiva variabel
@@ -34,12 +36,12 @@ efter fetch så väljer jag att göra en setstate för respektive array där jag
 för att inte komplicera livet så vill jag direkt in i arrayerna för daily och hourly så jag sedan bara kan rendera ut den datan i min render funktion*/
 
 componentDidMount() {
-
-  navigator.geolocation.getCurrentPosition((location) =>{
-    let latitude = location.coords.latitude;
-    let longitude = location.coords.longitude;
+ 
+  navigator.geolocation.getCurrentPosition((position) => {
+    let latitude = position.coords.latitude;
+     let longitude = position.coords.longitude;
   fetch(`https://cors-anywhere.herokuapp.com/https://api.darksky.net/forecast/c3acb99cc725550cc7e45a340e32bd52/${latitude},${longitude}?lang=sv`)
-  .then(res => res.json())
+.then(res => res.json())
   .then(data => {
 
 this.setState({ 
@@ -47,11 +49,14 @@ this.setState({
   currently: data['currently'],
   hourly: data['hourly']['data'],
   daily: data['daily']['data']
+})
+})}, (error) => alert(
+  `${error.message}, Whoops, couldn't find you. Either your browser doesn't support geolocation or you clicked block. We require the use of geolocation to show you data, so try and click the icon in the right side of your address bar and clearing your settings for future visits, reload the page and click "Allow"`
+)
 
-});
-});
-})  
-}
+
+  )}
+
 
  
 /*här uppdaterar jag respektive state till datan jag fetchat från min request och renderar ut
