@@ -23,9 +23,11 @@ constructor() {
     currently: [],
     hourly: [],
     daily: [],
-
+ isToggleOn: true
 
   };
+
+  this.handleClick = this.handleClick.bind(this);
 }
 
 
@@ -49,7 +51,7 @@ this.setState({
   currently: data['currently'],
   hourly: data['hourly']['data'],
   daily: data['daily']['data']
-})
+}) 
 })}, (error) => alert(
   `${error.message}, Whoops, couldn't find you. Either your browser doesn't support geolocation or you clicked block. We require the use of geolocation to show you data, so try and click the icon in the right side of your address bar and clearing your settings for future visits, reload the page and click "Allow"`
 )
@@ -57,7 +59,11 @@ this.setState({
 
   )}
 
-
+  handleClick() {
+    this.setState(function(prevState) {
+        return {isToggleOn: !prevState.isToggleOn};
+    });
+}
  
 /*här uppdaterar jag respektive state till datan jag fetchat från min request och renderar ut
 mina html-element i return med innehåll och speciella klasser jag använder från reactstrap och ikoner från mdbreact*/
@@ -79,12 +85,16 @@ const {daily} = this.state
   <ul> 
     <li>  <Moment unix>{currently.time}</Moment></li>
     <li> {currently.summary}</li>
- <li> {Math.round((currently.temperature  - 32) * (5/9)) + "°C"}  </li> 
-<li>{Math.round(currently.temperature) + "°F"} </li> 
+    <button onClick={this.handleClick}>
+          {this.state.isToggleOn ? `${Math.round((currently.temperature  - 32) * (5/9)) + "°C"}` : `${Math.round(currently.temperature) + "°F"}`}
+        </button>
+
 <li>{currently.humidity + " %"} </li>
 <li>{Math.round((currently.windSpeed)) + " mph"} </li>
 </ul>
    </Alert>
+
+
 
 {/* Renderar ut vädret för 7 framöver exklusive idag eftersom det visas ovan därav har jag slicat bort idag från min array*/}
 <h2>Kortöversikt för veckan</h2>
@@ -93,10 +103,23 @@ const {daily} = this.state
         <ListGroupItem active>
           <ListGroupItemHeading>  <Moment unix>{day.time}</Moment>  </ListGroupItemHeading>
           <ListGroupItemText>
-    
-          <MDBIcon icon="temperature-high" size="lg"/> {Math.round((day.temperatureHigh  - 32) * (5/9)) + " °C"} {' '}
-{Math.round(day.temperatureHigh) + " °F"} {' '} <MDBIcon icon="temperature-low" size="lg"/> {Math.round((day.temperatureLow  - 32) * (5/9)) + " °C"}
-{' '} {Math.round(day.temperatureLow) + " °F"} {' '} <MDBIcon icon ="tint" size="lg"/><MDBIcon icon ="percent" size="lg" /> {day.humidity + "%"} {' '}
+
+
+
+        
+          <MDBIcon icon="temperature-high" size="lg"/>     
+   <button onClick={this.handleClick}>
+          {this.state.isToggleOn ? `${Math.round((day.temperatureHigh  - 32) * (5/9)) + " °C"}` : `${Math.round(day.temperatureLow) + " °F"}`}
+        </button>
+        
+        
+         <MDBIcon icon="temperature-low" size="lg"/> 
+         <button onClick={this.handleClick}>
+          {this.state.isToggleOn ? `${Math.round((day.temperatureLow  - 32) * (5/9)) + " °C"}` : `${Math.round(day.temperatureLow) + " °F"}`}
+        </button>
+         
+         
+      <MDBIcon icon ="tint" size="lg"/><MDBIcon icon ="percent" size="lg" /> {day.humidity + "%"} {' '}
  <MDBIcon icon="wind" size="lg"/> {Math.round((day.windSpeed)) + " mph"} {' '}
 <MDBIcon icon="sun" size="lg" /> <MDBIcon icon="long-arrow-alt-up" size="lg" /> <Moment unix>{day.sunriseTime}</Moment> {' '}
  <MDBIcon icon="sun" size="lg" /> <MDBIcon icon="long-arrow-alt-down" size="lg" /> <Moment unix>{day.sunsetTime}</Moment> 
@@ -121,7 +144,13 @@ const {daily} = this.state
     <tr>
       <td><Moment unix>{h.time}</Moment></td>
       <td>{h.summary}</td>
-      <td>{Math.round((h.temperature  - 32) * (5/9)) + " °C"} {' '}  {Math.round(h.temperature) + "°F"}
+
+      <td>
+      
+      <button onClick={this.handleClick}>
+          {this.state.isToggleOn ? `${Math.round((h.temperature  - 32) * (5/9)) + " °C"}` : `${Math.round(h.temperature) + "°F"}`}
+        </button>
+
       </td>
     </tr>
   )}
@@ -142,10 +171,23 @@ const {daily} = this.state
       icon={d.icon.toUpperCase()} 
       autoplay={true}/>
   <ul>
-  <li key={d.temperatureHigh}><MDBIcon icon="temperature-high" size="lg"/> {Math.round((d.temperatureHigh  - 32) * (5/9)) + " °C"} {' '}
-{Math.round(d.temperatureHigh) + " °F"}</li>
-<li key={d.temperatureLow}><MDBIcon icon="temperature-low" size="lg"/> {Math.round((d.temperatureLow  - 32) * (5/9)) + " °C"}
-{' '} {Math.round(d.temperatureLow) + " °F"}</li>
+
+
+
+  <li key={d.temperatureHigh}><MDBIcon icon="temperature-high" size="lg"/> 
+  <button onClick={this.handleClick}>
+          {this.state.isToggleOn ? `${Math.round((d.temperatureHigh  - 32) * (5/9)) + " °C"}` : `${Math.round(d.temperatureHigh) + " °F"}`}
+        </button>
+
+    </li>
+<li key={d.temperatureLow}><MDBIcon icon="temperature-low" size="lg"/> 
+
+<button onClick={this.handleClick}>
+          {this.state.isToggleOn ? `${Math.round((d.temperatureLow  - 32) * (5/9)) + " °C"}` : `${Math.round(d.temperatureLow) + " °F"}`}
+        </button>
+
+
+</li>
  <li key={d.humidity}><MDBIcon icon ="tint" size="lg"/><MDBIcon icon ="percent" size="lg" /> {d.humidity + "%"}</li>
 <li key={d.windSpeed}><MDBIcon icon="wind" size="lg"/> {Math.round((d.windSpeed)) + " mph"}</li>
 <li> <MDBIcon icon="sun" size="lg" /> <MDBIcon icon="long-arrow-alt-up" size="lg" /> <Moment unix>{d.sunriseTime}</Moment> </li> 
